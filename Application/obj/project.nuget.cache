@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "mCOk2E48Ii8a3YWBrXL1P+cAu9zZfgGbGyKgBsVsxpvPBBN0fQQicQ+04XgeJsUw1pSyeB7GNoYmud67eX/vHQ==",
+  "dgSpecHash": "jx/S7YctpjZfoKP3I0qCHxq8rBOLJE+FfY1uRFDISuXTnxgB5EP2TaDOohCl/YaGJ1RTrfgd4Je49d0oJFYcAQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\HP\\Reactivities\\Application\\Application.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\mediatr\\7.0.0\\mediatr.7.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\mediatr.extensions.microsoft.dependencyinjection\\7.0.0\\mediatr.extensions.microsoft.dependencyinjection.7.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.0.0\\microsoft.bcl.asyncinterfaces.1.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.data.sqlite.core\\3.0.0\\microsoft.data.sqlite.core.3.0.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\3.0.0\\microsoft.dotnet.platformabstractions.3.0.0.nupkg.sha512",
