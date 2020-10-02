@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Persistence;
 
 namespace API
@@ -29,36 +29,37 @@ namespace API
         {
             services.AddDbContext<DataContext>(opt => 
             {
-            opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
-        services.AddCors(opt => {
-            opt.AddPolicy("CorsPolicy",policy =>{
-                policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000")
-            })
-        })
+            services.AddCors(opt => 
+            {
+                opt.AddPolicy("CorsPolicy", policy => 
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                });
+            });
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            // app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
+            else
             {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // app.UseHsts();
+            }
+            app.UseRouting();
+            app.UseAuthorization();
+            // app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
-            app.UseCors("CorsPolicy");
-            app.UseMvc();
         }
     }
 }
