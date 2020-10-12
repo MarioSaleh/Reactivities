@@ -1,38 +1,15 @@
-import React, {
-  useState,
-  useEffect,
-  Fragment,
-  SyntheticEvent,
-  useContext,
-} from "react";
+import React, { Fragment } from "react";
 import { Container } from "semantic-ui-react";
-import { IActivity } from "../models/activity";
 import NavBar from "../../features/nav/navbar";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
-import LoadingComponent from "./LayoutComponent";
-import ActivityStore from "../stores/activityStore";
 import { observer } from "mobx-react-lite";
+import { Route, RouteComponentProps, withRouter } from "react-router-dom";
+import HomePage from "../../features/home/HomePage";
+import ActivityForm from "../../features/activities/form/ActivityForm";
+import ActivityDetails from "../../features/activities/details/ActivityDetails";
 
-const App = () => {
-  const activityStore = useContext(ActivityStore);
-  const [activities, setActivities] = useState<IActivity[]>([]); //<IActivity[]> is added to tell that the activities is an array of type IActivity
-  const [selectedActivity, setselectedActivity] = useState<IActivity | null>(
-    null
-  ); // | null is added so that selectedActvity could be initialized as null at first
-
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [target, setTarget] = useState("");
-
-
- 
-
-  useEffect(() => {
-    //equivalent to componentDidMount
-      activityStore.loadActivities();
-  }, [activityStore]); // second parameter of empty array is added to let the useEffect function work one time only
-
-  if (activityStore.loadingInitial) return <LoadingComponent content="Loading Activities..." />
+const App: React.FC<RouteComponentProps> = ({ location }) => {
+  // second parameter of empty array is added to let the useEffect function work one time only
 
   // componentDidMount(){ //after rendering of the page
   //   axios.get<IActivity[]>('http://localhost:5000/api/activities') //make the response of type IActivity
@@ -47,13 +24,32 @@ const App = () => {
   return (
     <div>
       <Fragment>
-        <NavBar/>
-        <Container style={{ paddingTop: "7em" }}>
-          <ActivityDashboard/>
-        </Container>
+        <Route exact path="/" component={HomePage} />
+        <Route
+          path={"/(.+)"}
+          render={() => (
+            <Fragment>
+              <NavBar />
+              <Container style={{ marginTop: "7em" }}>
+                <Route exact path="/activities" component={ActivityDashboard} />
+                <Route
+                  exact
+                  path="/activities/:id"
+                  component={ActivityDetails}
+                />
+                <Route
+                  key={location.key}
+                  path={["/createActivity", "/manage/:id"]}
+                  component={ActivityForm}
+                />
+              </Container>
+            </Fragment>
+          )}
+        />
       </Fragment>
     </div>
+    // exact is inputed for the router to match the exact same path instead of first match wins
   );
 };
 
-export default observer(App);
+export default withRouter(observer(App));
