@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "epmQshLEZybgrRm+DSfXs72Sr4zW+Kx7mZtwDSJP2mGjADm60lyQ0SB9ijCPSnCl5xjS7++0NeuuqdCmqzQNAQ==",
+  "dgSpecHash": "roG2rpqsG8xhMXnDsHt1e19NH5ux1pU4Rm4kE5TEiypycH8lhsPC5miRn4RToPVid6rnag7hokFomE254taXTQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\HP\\Reactivities\\Domain\\Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.netcore.app.ref\\3.0.0\\microsoft.netcore.app.ref.3.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.0.0\\microsoft.windowsdesktop.app.ref.3.0.0.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.0.1\\microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512"
+  ],
   "logs": []
 }
