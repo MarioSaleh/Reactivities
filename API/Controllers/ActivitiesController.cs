@@ -1,16 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.Activities;
+using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Domain;
-using Application.Activities;
-using System;
-using System.Threading;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
-    // [ApiController]
+    [ApiController]
     public class ActivitiesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,24 +19,20 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Activity>>> List(CancellationToken ct)
+        public async Task<ActionResult<List<Activity>>> List()
         {
-            return await _mediator.Send(new List.Query(),ct);
+            return await _mediator.Send(new List.Query());
         }
 
-        [HttpGet("{id}")] //pass the "id" as the route parameter
+        [HttpGet("{id}")]
         public async Task<ActionResult<Activity>> Details(Guid id)
         {
-             if(!ModelState.IsValid)
-                return BadRequest(ModelState);
             return await _mediator.Send(new Details.Query{Id = id});
         }
 
         [HttpPost]
         public async Task<ActionResult<Unit>> Create(Create.Command command)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
             return await _mediator.Send(command);
         }
 

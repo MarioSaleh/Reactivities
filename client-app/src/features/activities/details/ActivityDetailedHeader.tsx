@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react'
+import { Link } from 'react-router-dom';
 import { Segment, Image, Header, Button, Item } from 'semantic-ui-react'
 import { IActivity } from '../../../app/models/activity'
+import {format} from 'date-fns'
 
 interface IProps{
     activity: IActivity;
@@ -34,7 +36,7 @@ const ActivityDetailedHeader: React.FC<IProps>= ({activity}) => {
                         content={activity.title}
                         style={{ color: 'white' }}
                       />
-                      <p>{activity.date}</p>
+                      <p>{format(activity.date,'eeee do MMM')}</p>
                       <p>
                         Hosted by <strong>Bob</strong>
                       </p>
@@ -46,7 +48,7 @@ const ActivityDetailedHeader: React.FC<IProps>= ({activity}) => {
             <Segment clearing attached='bottom'>
               <Button color='teal'>Join Activity</Button>
               <Button>Cancel attendance</Button>
-              <Button color='orange' floated='right'>
+              <Button color='orange' as={Link} to={`/manage/${activity.id}`} floated='right'>
                 Manage Event
               </Button>
             </Segment>

@@ -55,3 +55,4 @@ C:\Users\HP\Reactivities\API\bin\Debug\netcoreapp3.0\FluentValidation.dll
 C:\Users\HP\Reactivities\API\bin\Debug\netcoreapp3.0\FluentValidation.AspNetCore.dll
 C:\Users\HP\Reactivities\API\bin\Debug\netcoreapp3.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\HP\Reactivities\API\obj\Debug\netcoreapp3.0\API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\HP\Reactivities\API\bin\Debug\netcoreapp3.0\Newtonsoft.Json.dll
