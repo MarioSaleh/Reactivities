@@ -74,9 +74,9 @@ namespace Application.User
                 {
                     return new User
                     {
-                        DisplayName = user.DisplayName,
+                        displayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
-                        UserName = user.UserName,
+                        username = user.UserName,
                         Image = null
                     };
                 }

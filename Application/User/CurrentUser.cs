@@ -33,8 +33,8 @@ namespace Application.User
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
                 return new User
                 {
-                    DisplayName = user.DisplayName,
-                    UserName = user.UserName,
+                    displayName = user.DisplayName,
+                    username = user.UserName,
                     Token = _jwtGenerator.CreateToken(user),
                     Image = null
                 };

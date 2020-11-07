@@ -1,5 +1,4 @@
 import {action, computed, observable, runInAction} from "mobx";
-import { createContext } from "vm";
 import { history } from "../..";
 import agent from "../api/agent";
 import { IUser, IUserFormValues } from "../models/User";
@@ -23,6 +22,7 @@ export default class UserStore {
                 this.user = user;
             });
             this.rootStore.commonStore.setToken(user.token);
+            this.rootStore.modalStore.closeModal();
             history.push('/activities');
         } catch(error) {
             throw error;
