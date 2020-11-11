@@ -7,6 +7,7 @@ using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace Application.User
 {
@@ -57,7 +58,7 @@ namespace Application.User
                         displayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
                         username = user.UserName,
-                        Image = null
+                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
                     };
                 }
 
