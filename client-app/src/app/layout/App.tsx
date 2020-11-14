@@ -9,10 +9,10 @@ import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import NotFound from "./NotFound";
 import {ToastContainer} from 'react-toastify';
-import LoginForm from "../../features/user/LoginForm";
 import { RootStoreContext } from "../stores/rootStore";
 import LoadingComponent from "./LayoutComponent";
 import ModalContainer from '../common/modals/ModalContainer';
+import ProfilePage from "../../features/Profiles/ProfilePage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   // second parameter of empty array is added to let the useEffect function work one time only
@@ -67,7 +67,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   path={["/createActivity", "/manage/:id"]}
                   component={ActivityForm}
                 />
-                <Route exact path='/login' component={LoginForm}/>
+                <Route exact path='/profile/:username' component={ProfilePage}/>
                 <Route component={NotFound}/>
                 </Switch>
               </Container>
