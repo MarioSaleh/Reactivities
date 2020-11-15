@@ -51,7 +51,9 @@ const ProfilePhotos = () => {
                     <Image src={photo.url} />
                     {isCurrentUser && (
                       <Button.Group fluid width={2}>
-                        <Button floated='left'
+                        <Button
+                          floated="left"
+                          width={1}
                           name={photo.id}
                           loading={photo.id === target && loading}
                           basic
@@ -63,7 +65,9 @@ const ProfilePhotos = () => {
                             setMainPhoto(photo);
                           }}
                         />
-                        <Button floated='right'
+                        <Button
+                          floated="right"
+                          width={1}
                           loading={photo.id === target && loadingDelete}
                           basic
                           negative

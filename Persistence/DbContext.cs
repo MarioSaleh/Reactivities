@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -16,6 +15,7 @@ namespace Persistence
         public DbSet<Value> Values{get;set;}
         public DbSet<Activity> Activities{get;set;}
         public DbSet<UserActivity> UserActivities{get;set;}
+        public DbSet<Comment> Comments{get;set;}
 
         public DbSet<Photo> Photos{get;set;}
 
