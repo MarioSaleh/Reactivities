@@ -1,128 +1,194 @@
-import { action, observable, runInAction, computed } from "mobx";
+import { action, observable, runInAction, computed, reaction } from "mobx";
 import { toast } from "react-toastify";
 import agent from "../api/agent";
 import { IPhoto, IProfile, IProfileUpdate } from "../models/profile";
 import { RootStore } from "./rootStore";
 
 export default class ProfileStore {
-    rootStore: RootStore
-    
-    constructor(rootStore: RootStore){
-        this.rootStore = rootStore;
-    }
+  rootStore: RootStore;
 
-    @observable profile: IProfile | null = null;
-    @observable loadingProfile: boolean = true;
-    @observable uploadingPhoto:boolean = false;
-    @observable loading: boolean = false;
-    @observable loadingDelete: boolean = false;
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
 
-    
-    @computed get isCurrentUser() {
-        if(this.rootStore.userStore.user && this.profile?.username){
-            return this.rootStore.userStore.user.username === this.profile.username;
+    reaction(
+      () => this.activeTab,
+      activeTab => {
+        if(activeTab === 3 || activeTab === 4 ){
+          const predicate = activeTab === 3 ? "followers" : "following";
+          this.loadFollowings(predicate)
         } else {
-            return false;
+          this.followings = [];
         }
+      }
+    )
+  }
 
+  @observable profile: IProfile | null = null;
+  @observable loadingProfile: boolean = true;
+  @observable uploadingPhoto: boolean = false;
+  @observable loading: boolean = false;
+  @observable loadingDelete: boolean = false;
+  @observable followings: IProfile[] = [];
+  @observable activeTab: number = 0;
+
+
+  @computed get isCurrentUser() {
+    if (this.rootStore.userStore.user && this.profile?.username) {
+      return this.rootStore.userStore.user.username === this.profile.username;
+    } else {
+      return false;
     }
+  }
 
+  @action loadProfile = async (username: string) => {
+    this.loadingProfile = true;
+    try {
+      const profile = await agent.Profiles.get(username);
+      runInAction(() => {
+        this.profile = profile;
+        this.loadingProfile = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loadingProfile = false;
+      });
+      console.log(error);
+    }
+  };
 
-    @action loadProfile = async (username: string) => {
-        this.loadingProfile = true;
-        try{
-            const profile = await agent.Profiles.get(username);
-            runInAction(() => {
-                this.profile = profile;
-                this.loadingProfile = false;
-            });
-        } catch(error)
-        {
-            runInAction(() => {
-                this.loadingProfile = false;
-            });
-            console.log(error);
+  @action uploadPhoto = async (file: Blob) => {
+    this.uploadingPhoto = true;
+    try {
+      const photo = await agent.Profiles.uploadPhoto(file);
+      runInAction(() => {
+        if (this.profile) {
+          this.profile.photos.push(photo);
+          if (photo.isMain && this.rootStore.userStore.user) {
+            this.rootStore.userStore.user.image = photo.url;
+            this.profile.image = photo.url;
+          }
         }
+        this.uploadingPhoto = false;
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Problem uploading photo");
+      runInAction(() => {
+        this.uploadingPhoto = false;
+      });
     }
+  };
 
-    @action uploadPhoto = async (file: Blob) => {
-        this.uploadingPhoto = true;
-        try{    
-            const photo = await agent.Profiles.uploadPhoto(file);
-            runInAction(() => {
-                if(this.profile) {
-                    this.profile.photos.push(photo);
-                    if(photo.isMain && this.rootStore.userStore.user) {
-                        this.rootStore.userStore.user.image = photo.url;
-                        this.profile.image = photo.url;
-                    }
-                }
-                this.uploadingPhoto=false;
-            })
-        } catch(error) {
-            console.log(error);
-            toast.error('Problem uploading photo');
-            runInAction(() => {
-                this.uploadingPhoto = false;
-            })
-        }
+  @action setMainPhoto = async (photo: IPhoto) => {
+    this.loading = true;
+    await agent.Profiles.setMainPhoto(photo.id);
+    try {
+      runInAction(() => {
+        this.rootStore.userStore.user!.image = photo.url;
+        this.profile!.photos.find((a) => a.isMain)!.isMain = false;
+        this.profile!.photos.find((a) => a.id === photo.id)!.isMain = true;
+        this.profile!.image = photo.url;
+        this.loading = false;
+      });
+    } catch (error) {
+      toast.error("Problem setting photo as main");
+      runInAction(() => {
+        this.loading = false;
+      });
     }
+  };
 
-    @action setMainPhoto = async (photo: IPhoto) => {
-        this.loading=true;
-        await agent.Profiles.setMainPhoto(photo.id);
-        try{
-            runInAction(() => {
-                this.rootStore.userStore.user!.image = photo.url;
-                this.profile!.photos.find(a => a.isMain)!.isMain = false;
-                this.profile!.photos.find(a => a.id === photo.id)!.isMain = true;
-                this.profile!.image = photo.url;
-                this.loading = false;
-            })
-        } catch(error) {
-            toast.error("Problem setting photo as main");
-            runInAction(() => {
-                this.loading = false;
-            })
+  @action deletePhoto = async (photo: IPhoto) => {
+    this.loadingDelete = true;
+    await agent.Profiles.deletePhoto(photo.id);
+    try {
+      runInAction(() => {
+        if (photo.isMain) {
+          this.profile!.image = "";
+          this.rootStore.userStore.user!.image = undefined;
         }
+        this.profile!.photos = this.profile!.photos.filter(
+          (p) => p.id !== photo.id
+        );
+        this.loadingDelete = false;
+      });
+    } catch (error) {
+      toast.error("Problem deleting photo");
+      runInAction(() => {
+        this.loadingDelete = false;
+      });
     }
+  };
 
-    @action deletePhoto = async (photo: IPhoto) => {
-        this.loadingDelete = true;
-        await agent.Profiles.deletePhoto(photo.id);
-        try{
-            runInAction(() => {
-                if(photo.isMain)
-                    {
-                        this.profile!.image = '';  
-                        this.rootStore.userStore.user!.image = undefined;
-                    }
-                this.profile!.photos = this.profile!.photos.filter(p => p.id !== photo.id);
-                this.loadingDelete = false;
-            })
-        } catch (error){
-            toast.error("Problem deleting photo");
-            runInAction(() => {
-                this.loadingDelete = false;
-            });
-        }
+  @action updateProfile = async (profile: IProfileUpdate) => {
+    this.loading = true;
+    try {
+      await agent.Profiles.update(profile);
+      runInAction(() => {
+        this.loading = false;
+        this.rootStore.userStore.user!.displayName = profile.displayName;
+        this.profile!.bio = profile.bio;
+        this.profile!.displayName = profile.displayName;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        toast.error("Problem updatng profile");
+      });
     }
+  };
 
-    @action updateProfile = async(profile : IProfileUpdate) => {
-        this.loading= true;
-        try{
-            await agent.Profiles.update(profile);
-            runInAction(() => {
-                this.loading = false;
-                this.rootStore.userStore.user!.displayName = profile.displayName;
-                this.profile!.bio = profile.bio;
-                this.profile!.displayName = profile.displayName;
-            });
-        } catch(error) {
-            runInAction(() => {
-                this.loading=false;
-                toast.error("Problem updatng profile");
-            })
-        }
+  @action follow = async (username: string) => {
+    this.loading = true;
+    try {
+      await agent.Profiles.follow(username);
+      runInAction(() => {
+        this.loading = false;
+        this.profile!.following = true;
+        this.profile!.followersCount++;
+      });
+    } catch (error) {
+      toast.error("Problem following user");
+      runInAction(() => {
+        this.loading = false;
+      });
     }
+  };
+
+  @action unfollow = async (username: string) => {
+    try {
+      await agent.Profiles.unfollow(username);
+      runInAction(() => {
+        this.loading = false;
+        this.profile!.following = false;
+        this.profile!.followersCount--;
+      });
+    } catch (error) {
+      toast.error("Problem unfollowing user");
+      runInAction(() => {
+        this.loading = false;
+      });
+    }
+  };
+
+  @action loadFollowings = async (predicate: string) => {
+    this.loading = true;
+    try {
+      const profiles = await agent.Profiles.listFollowings(
+        this.profile!.username,
+        predicate
+      );
+      runInAction(() => {
+          this.loading = false;
+          this.followings = profiles;
+      })
+    } catch (error) {
+      toast.error("Problem loading followings");
+      runInAction(() => (this.loading = false));
+    }
+  };
+
+  @action setActiveTab = (activeTab : number) => {
+    this.activeTab = activeTab;
+  }
 }

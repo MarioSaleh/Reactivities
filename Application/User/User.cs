@@ -6,5 +6,6 @@ namespace Application.User
         public string Token { get; set; }
         public string username { get; set; }
         public string Image { get; set; }
+
     }
 }
